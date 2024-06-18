@@ -123,7 +123,6 @@ for label, p in reducedCells.items():  # create cell rules that were not loaded
 ## PT5B full cell model params (700+ comps)
 ## UC Davis
 if 'PT5B_full' not in loadCellParams:
-if 'PT5B_full' not in loadCellParams:
     if cfg.UCDAVIS==False:
         ihMod2str = {'harnett': 1, 'kole': 2, 'migliore': 3}
         cellRule = netParams.importCellParams(label='PT5B_full', conds={'cellType': 'PT', 'cellModel': 'HH_full'},
