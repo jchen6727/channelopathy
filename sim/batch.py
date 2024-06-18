@@ -807,7 +807,7 @@ def setRunCfg(b, type='mpi_bulletin', nodes=1, coresPerNode=8):
                     'nodes': 1,
                     'coresPerNode': 1,
                     'email': 'romanbaravalle@gmail.com',
-                    'folder': os.getcwd(),
+                    'folder': os.getcwd()+'/sim_cell/',
                     'script': 'sim_cell/init_cell.py',
                     'mpiCommand': 'mpiexec',
                     'custom': '#SBATCH --mem=1G\n#SBATCH --export=ALL\n#SBATCH --partition=compute',
