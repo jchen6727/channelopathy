@@ -204,8 +204,8 @@ if 'PT5B_full' not in loadCellParams:
         del netParams.cellParams['PT5B_full']['secs']['axon_1']['geom']['pt3d']
 
         netParams.cellParams['PT5B_full']['conds'] = {'cellModel': 'HH_full', 'cellType': 'PT'}
-        netParams.addCellParamsWeightNorm('PT5B_full', 'conn/PT5B_full_weightNorm.pkl', threshold=cfg.weightNormThreshold)  # load weight norm
-        if saveCellParams: netParams.saveCellParamsRule(label='PT5B_full', fileName='cells/PT5B_full_cellParams.pkl')
+        netParams.addCellParamsWeightNorm('PT5B_full', 'conn/PT5B_full_weightNorm_UCDavis.pkl', threshold=cfg.weightNormThreshold)  # load weight norm
+        if saveCellParams: netParams.saveCellParamsRule(label='PT5B_full', fileName='cells/PT5B_full_cellParams_UCDavis.pkl')
 
 #------------------------------------------------------------------------------
 ## IT5A full cell model params (700+ comps)
