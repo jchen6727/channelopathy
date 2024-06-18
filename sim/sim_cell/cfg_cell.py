@@ -117,7 +117,7 @@ cfg.cellmod =  {'IT2': 'HH_reduced',
 
 cfg.ihModel = 'migliore'  # ih model
 cfg.ihGbar = 1.0  # multiplicative factor for ih gbar in PT cells
-cfg.ihGbarZD = 0.25 # multiplicative factor for ih gbar in PT cells
+cfg.ihGbarZD = None # multiplicative factor for ih gbar in PT cells
 cfg.ihGbarBasal = 1.0 # 0.1 # multiplicative factor for ih gbar in PT cells
 cfg.ihlkc = 0.2 # ih leak param (used in Migliore)
 cfg.ihlkcBasal = 1.0
@@ -133,6 +133,16 @@ cfg.axonRa = 0.005
 
 cfg.gpas = 0.5  # multiplicative factor for pas g in PT cells
 cfg.epas = 0.9  # multiplicative factor for pas e in PT cells
+
+cfg.KgbarFactor = 1.0 # multiplicative factor for K channels gbar in all E cells
+cfg.makeKgbarFactorEqualToNewFactor = False
+
+if cfg.UCDAVIS==False:
+	cfg.modifyMechs = {'startTime': 1e20*500, 'endTime': 1e20*1000, 'cellType':'PT', 'mech': 'hd', 'property': 'gbar', 'newFactor': 1.00, 'origFactor': 0.75}
+else:
+	cfg.modifyMechs = {'startTime': 1e20*500, 'endTime': 1e20*1000, 'cellType':'PT', 'mech': 'hd', 'property': 'gbar', 'newFactor': 1.00, 'origFactor': 0.75}
+
+cfg.PTNaFactor = 1
 
 #------------------------------------------------------------------------------
 # Synapses
