@@ -798,7 +798,21 @@ def setRunCfg(b, type='mpi_bulletin', nodes=1, coresPerNode=8):
             'script': 'init.py', 
             'mpiCommand': 'mpirun', # comet='ibrun', bridges='mpirun'
             'skip': True}
+    elif type == 'hpc_slurm_expanse':
+        b.runCfg = {'type': 'hpc_slurm',
+                    'allocation': 'TG-IBN140002',
+                    'partition': 'compute', #'large-shared',
+                    'walltime': '5:30:00',
+                    'nodes': 1,
+                    'coresPerNode': 96,
+                    'email': 'romanbaravalle@gmail.com',
+                    'folder': '/home/rbaravalle/M1_VIPNGF/sim/',
+                    'script': 'init.py',
+                    'mpiCommand': 'mpiexec',
+                    'custom': '#SBATCH --mem=128G\n#SBATCH --export=ALL\n#SBATCH --partition=compute',
+                    'skip': True}
 
+    
     elif type=='hpc_sge_wscale':
         b.runCfg = {'type': 'hpc_sge',
                     'jobName': 'wscale',
