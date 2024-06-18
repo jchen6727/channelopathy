@@ -109,22 +109,22 @@ def custom():
 # ----------------------------------------------------------------------------------------------
 # Weight Normalization Exc
 # ----------------------------------------------------------------------------------------------
-def weightNormE(pops=['IT2', 'IT4', 'IT5A', 'IT5B', 'PT5B', 'IT6', 'CT6', 'PV2', 'SOM2'], 
-    segs = None, allSegs = True, rule = 'IT2_reduced', weights=list(np.arange(0.01, 0.2, 0.01)/100.0)):
+def weightNormE(pops = ['PT5B'], secs = None, locs = None,
+                allSegs = True, rule = 'PT5B_full', weights =list(np.arange(0.01, 0.2, 0.01)/100.0)):
 
     # Add params
-    from cfg_cell import cfg
     from netParams_cell import netParams
+    from cfg_cell import cfg
 
     excludeSegs = ['axon']
-    if not segs:
+    if not secs:
         secs = []
         locs = []
-        for secName,sec in netParams.cellParams[rule]['secs'].iteritems():
+        for secName, sec in netParams.cellParams[rule]['secs'].items():
             if secName not in excludeSegs:
                 if allSegs:
                     nseg = sec['geom']['nseg']
-                    for iseg in range(nseg):
+                    for iseg in list(range(nseg)):
                         secs.append(secName) 
                         locs.append((iseg+1)*(1.0/(nseg+1)))
                 else:
@@ -133,11 +133,12 @@ def weightNormE(pops=['IT2', 'IT4', 'IT5A', 'IT5B', 'PT5B', 'IT6', 'CT6', 'PV2',
 
     params = specs.ODict()
     params[('NetStim1', 'pop')] = pops
-    params[('NetStim1', 'sec')] = secs
     params[('NetStim1', 'loc')] = locs
+    params[('NetStim1', 'sec')] = secs
     params[('NetStim1', 'weight')] = weights
 
-    groupedParams = [('NetStim1', 'sec'), ('NetStim1', 'loc')] 
+    groupedParams = [('NetStim1', 'sec'), ('NetStim1', 'loc')]
+
 
     initCfg = {}
     initCfg['duration'] = 1.0*1e3
@@ -151,18 +152,17 @@ def weightNormE(pops=['IT2', 'IT4', 'IT5A', 'IT5B', 'PT5B', 'IT6', 'CT6', 'PV2',
     initCfg[('NetStim1', 'interval')] = 1000
     initCfg[('NetStim1','ynorm')] = [0.0, 1.0]
 
+    initCfg[('NetStim1', 'pop')] = ['PT5B']
+
     initCfg[('NetStim1', 'noise')] = 0
     initCfg[('NetStim1', 'number')] = 1
     initCfg[('NetStim1', 'delay')] = 1
     #initCfg[('GroupNetStimW1', 'pop')] = 'None'
-    initCfg[('NetStim1', 'delay')] = 1
     initCfg['addIClamp'] = 0
-    
+
     b = Batch(params=params, netParamsFile='netParams_cell.py', cfgFile='cfg_cell.py', initCfg=initCfg, groupedParams=groupedParams)
 
     return b
-
-
 # ----------------------------------------------------------------------------------------------
 # EPSPs via NetStim
 # ----------------------------------------------------------------------------------------------
