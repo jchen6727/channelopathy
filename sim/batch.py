@@ -798,6 +798,7 @@ def setRunCfg(b, type='mpi_bulletin', nodes=1, coresPerNode=8):
             'script': 'init.py', 
             'mpiCommand': 'mpirun', # comet='ibrun', bridges='mpirun'
             'skip': True}
+    
     elif type == 'hpc_slurm_expanse_wscale':
         b.runCfg = {'type': 'hpc_slurm',
                     'allocation': 'TG-IBN140002',
@@ -811,7 +812,8 @@ def setRunCfg(b, type='mpi_bulletin', nodes=1, coresPerNode=8):
                     'mpiCommand': 'mpiexec',
                     'custom': '#SBATCH --mem=1G\n#SBATCH --export=ALL\n#SBATCH --partition=compute',
                     'skip': True}
-    elif type == 'hpc_slurm_expanse_wscale':
+        
+    elif type == 'hpc_slurm_expanse_evol':
         b.runCfg = {'type': 'hpc_slurm',
                     'allocation': 'TG-IBN140002',
                     'partition': 'compute', #'large-shared',
