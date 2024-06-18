@@ -846,7 +846,7 @@ if __name__ == '__main__':
     # b = v56_batch5b()
 
     b = custom ()
-    b.batchLabel = 'grid_M1Modified'
+    b.batchLabel = 'grid_M1Orig'
     b.saveFolder = '../batchSims/'+b.batchLabel
     setRunCfg(b, 'hpc_sge_evol')
     b.run() # run batch
