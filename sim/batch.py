@@ -116,7 +116,7 @@ def weightNormE(pops = ['PT5B'], secs = None, locs = None,
     from sim_cell.netParams_cell import netParams
     from sim_cell.cfg_cell import cfg
 
-    excludeSegs = ['axon_1']
+    excludeSegs = ['axon','axon_1']
     if not secs:
         secs = []
         locs = []
