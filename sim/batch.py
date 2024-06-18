@@ -160,7 +160,7 @@ def weightNormE(pops = ['PT5B'], secs = None, locs = None,
     #initCfg[('GroupNetStimW1', 'pop')] = 'None'
     initCfg['addIClamp'] = 0
 
-    b = Batch(params=params, netParamsFile='netParams_cell.py', cfgFile='cfg_cell.py', initCfg=initCfg, groupedParams=groupedParams)
+    b = Batch(params=params, netParamsFile='sim_cell/netParams_cell.py', cfgFile='sim_cell/cfg_cell.py', initCfg=initCfg, groupedParams=groupedParams)
 
     return b
 # ----------------------------------------------------------------------------------------------
@@ -807,7 +807,7 @@ def setRunCfg(b, type='mpi_bulletin', nodes=1, coresPerNode=8):
                     'nodes': 1,
                     'coresPerNode': 1,
                     'email': 'romanbaravalle@gmail.com',
-                    'folder': os.getcwd()+'/sim_cell/',
+                    'folder': os.getcwd(),
                     'script': 'sim_cell/init_cell.py',
                     'mpiCommand': 'mpiexec',
                     'custom': '#SBATCH --mem=1G\n#SBATCH --export=ALL\n#SBATCH --partition=compute',
