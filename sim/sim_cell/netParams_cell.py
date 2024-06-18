@@ -123,38 +123,82 @@ for label, p in reducedCells.items():  # create cell rules that were not loaded
 ## PT5B full cell model params (700+ comps)
 ## UC Davis
 if 'PT5B_full' not in loadCellParams:
-    # Cell parameters
-    ## PT cell properties
-#    netParams.loadCellParams('PT5B_full', 'cells/Na1216TF.json')
-    netParams.importCellParams('PT5B_full', 'Na12HMMModel_TF.py', 'Na12Model_TF')
-    netParams.renameCellParamsSec(label='PT5B_full', oldSec='soma_0', newSec='soma')
+if 'PT5B_full' not in loadCellParams:
+    if cfg.UCDAVIS==False:
+        ihMod2str = {'harnett': 1, 'kole': 2, 'migliore': 3}
+        cellRule = netParams.importCellParams(label='PT5B_full', conds={'cellType': 'PT', 'cellModel': 'HH_full'},
+          fileName='cells/PTcell.hoc', cellName='PTcell', cellArgs=[ihMod2str[cfg.ihModel], cfg.ihSlope], somaAtOrigin=True)
+        nonSpiny = ['apic_0', 'apic_1']
+        netParams.addCellParamsSecList(label='PT5B_full', secListName='perisom', somaDist=[0, 50])  # sections within 50 um of soma
+        netParams.addCellParamsSecList(label='PT5B_full', secListName='below_soma', somaDistY=[-600, 0])  # sections within 0-300 um of soma
+        for sec in nonSpiny: cellRule['secLists']['perisom'].remove(sec)
+        cellRule['secLists']['alldend'] = [sec for sec in cellRule.secs if ('dend' in sec or 'apic' in sec)] # basal+apical
+        cellRule['secLists']['apicdend'] = [sec for sec in cellRule.secs if ('apic' in sec)] # apical
+        cellRule['secLists']['spiny'] = [sec for sec in cellRule['secLists']['alldend'] if sec not in nonSpiny]
+        # Adapt ih params based on cfg param
+        for secName in cellRule['secs']:
+            for mechName,mech in cellRule['secs'][secName]['mechs'].items():
+                if mechName in ['ih','h','h15', 'hd']: 
+                    mech['gbar'] = [g*cfg.ihGbar for g in mech['gbar']] if isinstance(mech['gbar'],list) else mech['gbar']*cfg.ihGbar
+                    if cfg.ihModel == 'migliore':   
+                        mech['clk'] = cfg.ihlkc  # migliore's shunt current factor
+                        mech['elk'] = cfg.ihlke  # migliore's shunt current reversal potential
+                    if secName.startswith('dend'): 
+                        mech['gbar'] *= cfg.ihGbarBasal  # modify ih conductance in soma+basal dendrites
+                        mech['clk'] *= cfg.ihlkcBasal  # modify ih conductance in soma+basal dendrites
+                    if secName in cellRule['secLists']['below_soma']: #secName.startswith('dend'): 
+                        mech['clk'] *= cfg.ihlkcBelowSoma  # modify ih conductance in soma+basal dendrites
 
-    cellRule = netParams.cellParams['PT5B_full']
+            # Adapt K gbar
+            for kmech in [k for k in cellRule['secs'][secName]['mechs'].keys() if k.startswith('k') and k!='kBK']:
+                cellRule['secs'][secName]['mechs'][kmech]['gbar'] *= cfg.KgbarFactor 
 
-    cellRule['secs']['axon_0']['geom']['pt3d'] = [[0,0,0,0]] #[[1e30, 1e30, 1e30, 1e30]] #stupid workaround that should be fixed in NetPyNE
-    cellRule['secs']['axon_1']['geom']['pt3d'] = [[1e30, 1e30, 1e30, 1e30]] #breaks in simulations btw. Just used for the perisom and below_som$
+        # Reduce dend Na to avoid dend spikes (compensate properties by modifying axon params)
+        for secName in cellRule['secLists']['alldend']:
+            cellRule['secs'][secName]['mechs']['nax']['gbar'] = 0.0153130368342 * cfg.dendNa # 0.25 
+    
+        cellRule['secs']['soma']['mechs']['nax']['gbar'] = 0.0153130368342  * cfg.somaNa
+        cellRule['secs']['axon']['mechs']['nax']['gbar'] = 0.0153130368342  * cfg.axonNa # 11  
+        cellRule['secs']['axon']['geom']['Ra'] = 137.494564931 * cfg.axonRa # 0.005
 
-    nonSpiny = ['apic_0' ,'apic_1']
+        for secName in cellRule['secs']: cellRule['secs'][secName]['mechs']['nax']['gbar'] *= cfg.PTNaFactor # Modify for the mutated channels
 
-    netParams.addCellParamsSecList(label='PT5B_full', secListName='perisom', somaDist=[0, 50])  # sections within 50 um of soma
-    netParams.addCellParamsSecList(label='PT5B_full', secListName='below_soma', somaDistY=[-600, 0])  # sections within 0-300 um of soma
+        # Remove Na (TTX)
+        if cfg.removeNa:
+           for secName in cellRule['secs']: cellRule['secs'][secName]['mechs']['nax']['gbar'] = 0.0
+        netParams.addCellParamsWeightNorm('PT5B_full', 'conn/PT5B_full_weightNorm.pkl', threshold=cfg.weightNormThreshold)  # load weight norm
+        if saveCellParams: netParams.saveCellParamsRule(label='PT5B_full', fileName='cells/PT5B_full_cellParams.pkl')
 
-    for sec in nonSpiny: # N.B. apic_1 not in `perisom` . `apic_0` and `apic_114` are
-        if sec in cellRule['secLists']['perisom']: # fixed logic
-            cellRule['secLists']['perisom'].remove(sec)
-    cellRule['secLists']['alldend'] = [sec for sec in cellRule['secs'] if ('dend' in sec or 'apic' in sec)] # basal+apical
-    cellRule['secLists']['apicdend'] = [sec for sec in cellRule['secs'] if ('apic' in sec)] # apical
-    cellRule['secLists']['spiny'] = [sec for sec in cellRule['secLists']['alldend'] if sec not in nonSpiny]
-    cellRule['secs']['axon_0']['spikeGenLoc'] = 0.5
+    else:
+        netParams.importCellParams('PT5B_full', 'Na12HMMModel_TF.py', 'Na12Model_TF')
+        netParams.renameCellParamsSec(label='PT5B_full', oldSec='soma_0', newSec='soma')
 
-    cellRule['secs']['soma']['threshold'] = 0. # Lowering since it looks like v in soma is not reaching high voltages when spike occurs
+        cellRule = netParams.cellParams['PT5B_full']
 
-    del netParams.cellParams['PT5B_full']['secs']['axon_0']['geom']['pt3d']
-    del netParams.cellParams['PT5B_full']['secs']['axon_1']['geom']['pt3d']
+        cellRule['secs']['axon_0']['geom']['pt3d'] = [[0,0,0,0]] #[[1e30, 1e30, 1e30, 1e30]] #stupid workaround that should be fixed in NetPyNE
+        cellRule['secs']['axon_1']['geom']['pt3d'] = [[1e30, 1e30, 1e30, 1e30]] #breaks in simulations btw. Just used for the perisom and below_soma sections
 
-    netParams.cellParams['PT5B_full']['conds'] = {'cellModel': 'HH_full', 'cellType': 'PT'}
-    #netParams.addCellParamsWeightNorm('PT5B_full', 'conn/PT5B_full_weightNorm.pkl', threshold=cfg.weightNormThreshold)  # load weight norm
-    if saveCellParams: netParams.saveCellParamsRule(label='PT5B_full', fileName='cells/PT5B_full_cellParams.pkl')
+        nonSpiny = ['apic_0' ,'apic_1']
+
+        netParams.addCellParamsSecList(label='PT5B_full', secListName='perisom', somaDist=[0, 50])  # sections within 50 um of soma
+        netParams.addCellParamsSecList(label='PT5B_full', secListName='below_soma', somaDistY=[-600, 0])  # sections within 0-300 um of soma
+
+        for sec in nonSpiny: # N.B. apic_1 not in `perisom` . `apic_0` and `apic_114` are
+            if sec in cellRule['secLists']['perisom']: # fixed logic
+                cellRule['secLists']['perisom'].remove(sec)
+        cellRule['secLists']['alldend'] = [sec for sec in cellRule['secs'] if ('dend' in sec or 'apic' in sec)] # basal+apical
+        cellRule['secLists']['apicdend'] = [sec for sec in cellRule['secs'] if ('apic' in sec)] # apical
+        cellRule['secLists']['spiny'] = [sec for sec in cellRule['secLists']['alldend'] if sec not in nonSpiny]
+        cellRule['secs']['axon_0']['spikeGenLoc'] = 0.5
+
+        cellRule['secs']['soma']['threshold'] = 0. # Lowering since it looks like v in soma is not reaching high voltages when spike occurs
+
+        del netParams.cellParams['PT5B_full']['secs']['axon_0']['geom']['pt3d']
+        del netParams.cellParams['PT5B_full']['secs']['axon_1']['geom']['pt3d']
+
+        netParams.cellParams['PT5B_full']['conds'] = {'cellModel': 'HH_full', 'cellType': 'PT'}
+        netParams.addCellParamsWeightNorm('PT5B_full', 'conn/PT5B_full_weightNorm.pkl', threshold=cfg.weightNormThreshold)  # load weight norm
+        if saveCellParams: netParams.saveCellParamsRule(label='PT5B_full', fileName='cells/PT5B_full_cellParams.pkl')
 
 #------------------------------------------------------------------------------
 ## IT5A full cell model params (700+ comps)
