@@ -113,10 +113,10 @@ def weightNormE(pops = ['PT5B'], secs = None, locs = None,
                 allSegs = True, rule = 'PT5B_full', weights =list(np.arange(0.01, 0.2, 0.01)/100.0)):
 
     # Add params
-    from netParams_cell import netParams
-    from cfg_cell import cfg
+    from sim_cell.netParams_cell import netParams
+    from sim_cell.cfg_cell import cfg
 
-    excludeSegs = ['axon']
+    excludeSegs = ['axon_1']
     if not secs:
         secs = []
         locs = []
