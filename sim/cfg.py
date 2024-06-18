@@ -43,7 +43,7 @@ cfg.checkErrors = False
 cfg.saveInterval = 100 # define how often the data is saved, this can be used with interval run if you want to update the weights more often than you save
 cfg.intervalFolder = 'interval_saving'
 
-cfg.UCDAVIS = True
+cfg.UCDAVIS = False
 
 #------------------------------------------------------------------------------
 # Recording 
