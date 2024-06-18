@@ -68,7 +68,7 @@ loadCellParams = cellParamLabels
 saveCellParams = False #True
 
 for ruleLabel in loadCellParams:
-    netParams.loadCellParamsRule(label=ruleLabel, fileName='../cells/'+ruleLabel+'_cellParams.pkl')
+    netParams.loadCellParamsRule(label=ruleLabel, fileName='cells/'+ruleLabel+'_cellParams.pkl')
 
 #------------------------------------------------------------------------------
 # Specification of cell rules not previously loaded
@@ -94,7 +94,7 @@ reducedSecList = {  # section Lists for reduced cell model
 for label, p in reducedCells.items():  # create cell rules that were not loaded 
     if label not in loadCellParams:
         cellRule = netParams.importCellParams(label=label, conds={'cellType': label[0:2], 'cellModel': 'HH_reduced', 'ynorm': layer[p['layer']]},
-        fileName='../cells/'+p['cname']+'.py', cellName=p['cname'], cellArgs={'params': p['carg']} if p['carg'] else None)
+        fileName='cells/'+p['cname']+'.py', cellName=p['cname'], cellArgs={'params': p['carg']} if p['carg'] else None)
         dendL = (layer[p['layer']][0]+(layer[p['layer']][1]-layer[p['layer']][0])/2.0) * cfg.sizeY  # adapt dend L based on layer
         for secName in ['Adend1', 'Adend2', 'Adend3', 'Bdend']: cellRule['secs'][secName]['geom']['L'] = dendL / 3.0  # update dend L
         for k,v in reducedSecList.items(): cellRule['secLists'][k] = v  # add secLists
@@ -116,7 +116,7 @@ for label, p in reducedCells.items():  # create cell rules that were not loaded
                 sec['geom']['pt3d'].append([offset+0, 0, 0, sec['geom']['diam']])
                 sec['geom']['pt3d'].append([offset+0, -sec['geom']['L'], 0, sec['geom']['diam']])   
 
-        if saveCellParams: netParams.saveCellParamsRule(label=label, fileName='../cells/'+label+'_cellParams.pkl')
+        if saveCellParams: netParams.saveCellParamsRule(label=label, fileName='cells/'+label+'_cellParams.pkl')
 
 
 #------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ for label, p in reducedCells.items():  # create cell rules that were not loaded
 if 'PT5B_full' not in loadCellParams:
     # Cell parameters
     ## PT cell properties
-#    netParams.loadCellParams('PT5B_full', '../cells/Na1216TF.json')
+#    netParams.loadCellParams('PT5B_full', 'cells/Na1216TF.json')
     netParams.importCellParams('PT5B_full', 'Na12HMMModel_TF.py', 'Na12Model_TF')
     netParams.renameCellParamsSec(label='PT5B_full', oldSec='soma_0', newSec='soma')
 
@@ -153,21 +153,21 @@ if 'PT5B_full' not in loadCellParams:
     del netParams.cellParams['PT5B_full']['secs']['axon_1']['geom']['pt3d']
 
     netParams.cellParams['PT5B_full']['conds'] = {'cellModel': 'HH_full', 'cellType': 'PT'}
-    #netParams.addCellParamsWeightNorm('PT5B_full', '../conn/PT5B_full_weightNorm.pkl', threshold=cfg.weightNormThreshold)  # load weight norm
-    if saveCellParams: netParams.saveCellParamsRule(label='PT5B_full', fileName='../cells/PT5B_full_cellParams.pkl')
+    #netParams.addCellParamsWeightNorm('PT5B_full', 'conn/PT5B_full_weightNorm.pkl', threshold=cfg.weightNormThreshold)  # load weight norm
+    if saveCellParams: netParams.saveCellParamsRule(label='PT5B_full', fileName='cells/PT5B_full_cellParams.pkl')
 
 #------------------------------------------------------------------------------
 ## IT5A full cell model params (700+ comps)
 #if 'IT5A_full' not in loadCellParams:
 #    cellRule = netParams.importCellParams(label='IT5A_full', conds={'cellType': 'IT', 'cellModel': 'HH_full', 'ynorm': layer['5A']},
-#      fileName='../cells/ITcell.py', cellName='ITcell', cellArgs={'params': 'BS1579'}, somaAtOrigin=True)
+#      fileName='cells/ITcell.py', cellName='ITcell', cellArgs={'params': 'BS1579'}, somaAtOrigin=True)
 #    netParams.renameCellParamsSec(label='IT5A_full', oldSec='soma_0', newSec='soma')
 #    #netParams.addCellParamsWeightNorm('IT5A_full', 'conn/IT_full_BS1579_weightNorm.pkl', threshold=cfg.weightNormThreshold) # add weightNorm before renaming soma_0
 #    netParams.addCellParamsSecList(label='IT5A_full', secListName='perisom', somaDist=[0, 50])  # sections within 50 um of soma
 #    cellRule['secLists']['alldend'] = [sec for sec in cellRule.secs if ('dend' in sec or 'apic' in sec)] # basal+apical
 #    cellRule['secLists']['apicdend'] = [sec for sec in cellRule.secs if ('apic' in sec)] # basal+apical
 #    cellRule['secLists']['spiny'] = [sec for sec in cellRule['secLists']['alldend'] if sec not in ['apic_0', 'apic_1']]
-#    if saveCellParams: netParams.saveCellParamsRule(label='IT5A_full', fileName='../cells/IT5A_full_cellParams.pkl')
+#    if saveCellParams: netParams.saveCellParamsRule(label='IT5A_full', fileName='cells/IT5A_full_cellParams.pkl')
 
 
 #------------------------------------------------------------------------------
@@ -187,38 +187,38 @@ if 'PT5B_full' not in loadCellParams:
 ## PV cell params (3-comp)
 if 'PV_simple' not in loadCellParams:
     cellRule = netParams.importCellParams(label='PV_simple', conds={'cellType':'PV', 'cellModel':'HH_simple'}, 
-      fileName='../cells/FS3.hoc', cellName='FScell1', cellInstance = True)
+      fileName='cells/FS3.hoc', cellName='FScell1', cellInstance = True)
     cellRule['secLists']['spiny'] = ['soma', 'dend']
     #netParams.addCellParamsWeightNorm('PV_simple', 'conn/PV_simple_weightNorm.pkl', threshold=cfg.weightNormThreshold)
-    if saveCellParams: netParams.saveCellParamsRule(label='PV_simple', fileName='../cells/PV_simple_cellParams.pkl')
+    if saveCellParams: netParams.saveCellParamsRule(label='PV_simple', fileName='cells/PV_simple_cellParams.pkl')
 
 
 #------------------------------------------------------------------------------
 ## SOM cell params (3-comp)
 if 'SOM_simple' not in loadCellParams:
     cellRule = netParams.importCellParams(label='SOM_simple', conds={'cellType':'SOM', 'cellModel':'HH_simple'}, 
-      fileName='../cells/LTS3.hoc', cellName='LTScell1', cellInstance = True)
+      fileName='cells/LTS3.hoc', cellName='LTScell1', cellInstance = True)
     cellRule['secLists']['spiny'] = ['soma', 'dend']
     #netParams.addCellParamsWeightNorm('SOM_simple', 'conn/SOM_simple_weightNorm.pkl', threshold=cfg.weightNormThreshold)
-    if saveCellParams: netParams.saveCellParamsRule(label='SOM_simple', fileName='../cells/SOM_simple_cellParams.pkl')
+    if saveCellParams: netParams.saveCellParamsRule(label='SOM_simple', fileName='cells/SOM_simple_cellParams.pkl')
     
 
 #------------------------------------------------------------------------------
 ## VIP cell params (5-comp)
 if 'VIP_reduced' not in loadCellParams:
-    cellRule = netParams.importCellParams(label='VIP_reduced', conds={'cellType': 'VIP', 'cellModel': 'HH_reduced'}, fileName='../cells/vipcr_cell.hoc',         cellName='VIPCRCell_EDITED', importSynMechs = True)
+    cellRule = netParams.importCellParams(label='VIP_reduced', conds={'cellType': 'VIP', 'cellModel': 'HH_reduced'}, fileName='cells/vipcr_cell.hoc',         cellName='VIPCRCell_EDITED', importSynMechs = True)
     cellRule['secLists']['spiny'] = ['soma', 'rad1', 'rad2', 'ori1', 'ori2']
     #netParams.addCellParamsWeightNorm('VIP_simple', 'conn/SOM_simple_weightNorm.pkl', threshold=cfg.weightNormThreshold)
-    if saveCellParams: netParams.saveCellParamsRule(label='VIP_simple', fileName='../cells/VIP_reduced_cellParams.pkl')
+    if saveCellParams: netParams.saveCellParamsRule(label='VIP_simple', fileName='cells/VIP_reduced_cellParams.pkl')
 
 
 #------------------------------------------------------------------------------
 ## NGF cell params (1-comp)
 if 'NGF_simple' not in loadCellParams:
-    netParams.importCellParams(label='NGF_simple', conds={'cellType': 'NGF', 'cellModel': 'HH_simple'}, fileName='../cells/ngf_cell.hoc', cellName='ngfcell', importSynMechs = True)
+    netParams.importCellParams(label='NGF_simple', conds={'cellType': 'NGF', 'cellModel': 'HH_simple'}, fileName='cells/ngf_cell.hoc', cellName='ngfcell', importSynMechs = True)
     #cellRule['secLists']['spiny'] = ['soma', 'rad1', 'rad2', 'ori1', 'ori2']
     #netParams.addCellParamsWeightNorm('VIP_simple', 'conn/SOM_simple_weightNorm.pkl', threshold=cfg.weightNormThreshold)
-    if saveCellParams: netParams.saveCellParamsRule(label='NGF_simple', fileName='../cells/NGF_simple_cellParams.pkl')
+    if saveCellParams: netParams.saveCellParamsRule(label='NGF_simple', fileName='cells/NGF_simple_cellParams.pkl')
 
 #------------------------------------------------------------------------------
 # Population parameters
@@ -226,7 +226,7 @@ if 'NGF_simple' not in loadCellParams:
 
 #------------------------------------------------------------------------------
 ## load densities
-with open('../cells/cellDensity.pkl', 'rb') as fileObj: density = pickle.load(fileObj)['density']
+with open('cells/cellDensity.pkl', 'rb') as fileObj: density = pickle.load(fileObj)['density']
 
 ## Local populations
 ### Layer 1:
@@ -280,7 +280,7 @@ if cfg.singleCellPops:
 ## Long-range input populations (VecStims)
 if cfg.addLongConn:
     ## load experimentally based parameters for long range inputs
-    with open('../conn/conn_long.pkl', 'rb') as fileObj: connLongData = pickle.load(fileObj)
+    with open('conn/conn_long.pkl', 'rb') as fileObj: connLongData = pickle.load(fileObj)
     #ratesLong = connLongData['rates']
 
     numCells = cfg.numCellsLong
@@ -569,7 +569,7 @@ if cfg.netClamp:
 # Local connectivity parameters
 #------------------------------------------------------------------------------
 try:
-    with open('../conn/conn.pkl', 'r') as fileObj: connData = pickle.load(fileObj)
+    with open('conn/conn.pkl', 'r') as fileObj: connData = pickle.load(fileObj)
     bins = connData['bins']
     pmat = connData['pmat']
     wmat = connData['wmat']
@@ -782,8 +782,8 @@ if cfg.ihSubConn:
 #------------------------------------------------------------------------------
 # NetStim (L2/3 stand-in) -> PT (Sheets fig11)
 if cfg.stimSubConn:
-    with open('../conn/conn_dend_PT.json', 'r') as fileObj: connDendPTData = json.load(fileObj)
-    with open('../conn/conn_dend_IT.json', 'r') as fileObj: connDendITData = json.load(fileObj)
+    with open('conn/conn_dend_PT.json', 'r') as fileObj: connDendPTData = json.load(fileObj)
+    with open('conn/conn_dend_IT.json', 'r') as fileObj: connDendITData = json.load(fileObj)
     
 
     lenY = 30 
@@ -804,8 +804,8 @@ if cfg.stimSubConn:
 #------------------------------------------------------------------------------
 # Network model
 if cfg.addSubConn:
-    with open('../conn/conn_dend_PT.json', 'r') as fileObj: connDendPTData = json.load(fileObj)
-    with open('../conn/conn_dend_IT.json', 'r') as fileObj: connDendITData = json.load(fileObj)
+    with open('conn/conn_dend_PT.json', 'r') as fileObj: connDendPTData = json.load(fileObj)
+    with open('conn/conn_dend_IT.json', 'r') as fileObj: connDendITData = json.load(fileObj)
     
     #------------------------------------------------------------------------------
     # L2/3,TVL,S2,cM1,M2 -> PT (Suter, 2015)
