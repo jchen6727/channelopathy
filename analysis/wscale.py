@@ -168,7 +168,7 @@ if __name__ == '__main__':
 
     # run batch E cells
 
-    dataFolder = '../data'
+    dataFolder = '../batchSims'
     batchLabel = 'wscaleUCDavis'   # v52_batch3'
     #loadFromFile = True
 
