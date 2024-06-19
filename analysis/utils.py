@@ -133,7 +133,7 @@ def readBatchData(dataFolder, batchLabel, loadAll=False, saveAll=True, vars=None
                 # read output file
                 iCombStr = ''.join([''.join('_'+str(i)) for i in iComb])
                 simLabel = b['batchLabel']+iCombStr
-                outFile = b['saveFolder']+'/'+simLabel+'.json'
+                outFile = b['saveFolder']+'/'+simLabel+'_data.json'
                 try:
                     with open(outFile, 'r') as fileObj:
                         output = json.load(fileObj, object_pairs_hook=OrderedDict)
