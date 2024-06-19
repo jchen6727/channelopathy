@@ -41,7 +41,7 @@ cfg.printPopAvgRates = True
 
 cfg.checkErrors = 0
 
-cfg.UCDAVIS = False
+cfg.UCDAVIS = True
 
 #------------------------------------------------------------------------------
 # Recording 
