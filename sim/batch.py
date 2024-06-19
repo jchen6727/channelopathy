@@ -874,7 +874,7 @@ if __name__ == '__main__':
     # Figure 6 (VL vs Ih Quiet+Move)
     # b = v56_batch5b()
 
-    b = custom ()
+    b = custom()
     b.batchLabel = 'grid_M1Orig'
     b.saveFolder = '../batchSims/'+b.batchLabel
     setRunCfg(b, 'hpc_sge_evol')
