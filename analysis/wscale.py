@@ -103,8 +103,7 @@ def calculateWeightNorm(params, data, epspNorm=0.5, somaLabel='soma', stimRange=
 def calculateWeightNormPops(params, data, epspNorm=0.5, somaLabel='soma', stimRange=[3000,4000], savePath=None):
     epsp = calculateEPSPsPops(params, data, somaLabel=somaLabel, stimRange=stimRange)
 
-    popSaveLabels = {'IT2': 'IT2_reduced', 'IT4': 'IT4_reduced', 'IT5A': 'IT5A_full', 'IT5B': 'IT5B_reduced', 
-                    'PT5B': 'PT_full', 'IT6': 'IT6_reduced', 'CT6': 'CT6_reduced', 'PV2': 'PV_simple', 'SOM2': 'SOM_simple'}
+    popSaveLabels = {'PT5B': 'PT_full'}
     pops = [p for p in params[2]['values']]
     secs = [s for s in params[0]['values']]
     locs = [s for s in params[1]['values']]
