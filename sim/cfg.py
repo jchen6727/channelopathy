@@ -130,7 +130,7 @@ else:
 	cfg.modifyMechs = {'startTime': 1e20*500, 'endTime': 1e20*1000, 'cellType':'PT', 'mech': 'hd', 'property': 'gbar', 'newFactor': 1.00, 'origFactor': 0.75}
 
 
-cfg.PTNaFactor = 1
+cfg.PTNaFactor = 1.
 
 #------------------------------------------------------------------------------
 # Synapses
@@ -145,7 +145,7 @@ cfg.AMPATau2Factor = 1.0
 #------------------------------------------------------------------------------
 # Network 
 #------------------------------------------------------------------------------
-cfg.singleCellPops = 0  # Create pops with 1 single cell (to debug)
+cfg.singleCellPops = False  # Create pops with 1 single cell (to debug)
 cfg.weightNorm = 1  # use weight normalization
 cfg.weightNormThreshold = 4.0  # weight normalization factor threshold
 

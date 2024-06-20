@@ -13,7 +13,7 @@ import os
 # ----------------------------------------------------------------------------------------------
 # Custom
 # ----------------------------------------------------------------------------------------------
-def custom():
+def custom(UCDAVIS=False):
     params = specs.ODict()
     # # long-range inputs
     #params[('weightLong', 'TPO')] = [0.5] #[0.25, 0.5, 0.75] 
@@ -28,7 +28,7 @@ def custom():
     #params['EEGain'] = [1.0] 
     params['IPTGain'] = [0.8, 0.9, 1, 1.1, 1.2]
 
-    params['PTNaFactor'] = [0.5, 1]
+    params['PTNaFactor'] = [0.5, 1.]
 
 
     # IEgain
@@ -57,7 +57,9 @@ def custom():
     initCfg['duration'] = 1500
     initCfg['printPopAvgRates'] = [0, 1500] 
     initCfg['dt'] = 0.025
-
+    initCfg['UCDAVIS'] = UCDAVIS
+    if UCDAVIS: initCfg['addSubConn']=True #False
+    
     #initCfg['scaleDensity'] = 1.0
 
     # cell params
@@ -843,7 +845,7 @@ def setRunCfg(b, type='mpi_bulletin', nodes=1, coresPerNode=8):
 
     elif type=='hpc_sge_evol':
         b.runCfg = {'type': 'hpc_sge',
-                    'jobName': 'M1_CR',
+                    'jobName': 'M1_UCDavis',
                     'cores': 19,
                     'log': os.getcwd() +'/' + b.batchLabel +'.log',
                     'mpiCommand': 'mpiexec',
@@ -874,8 +876,12 @@ if __name__ == '__main__':
     # Figure 6 (VL vs Ih Quiet+Move)
     # b = v56_batch5b()
 
-    b = custom()
-    b.batchLabel = 'grid_M1Orig'
+    UCDAVIS = True
+    b = custom(UCDAVIS)
+    if UCDAVIS:
+        b.batchLabel = 'grid_M1_UCDavis_SubCellDist'
+    else:
+        b.batchLabel = 'grid_M1_Orig'
     b.saveFolder = '../batchSims/'+b.batchLabel
     setRunCfg(b, 'hpc_sge_evol')
     b.run() # run batch
@@ -883,7 +889,7 @@ if __name__ == '__main__':
     #b = weightNormE(pops = ['PT5B'], locs = None,
     #    allSegs = True, rule = 'PT5B_full', weights = list(np.arange(0.01, 0.2, 0.01)/100.0))
 
-    #b.batchLabel = 'wscale2'
+    #b.batchLabel = 'wscaleUCDavis'
     #b.saveFolder = '../batchSims/'+b.batchLabel
     #b.method = 'grid'  # evol
     #setRunCfg(b, 'hpc_sge_wscale')
