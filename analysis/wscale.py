@@ -1,3 +1,5 @@
+
+
 """
 wscale.py
 
@@ -18,8 +20,8 @@ import time
 
 def calculateEPSPs(params, data, somaLabel='soma', stimRange=[3000,4000], syn='exc'):
     out = {}
-    secs = [s for s in params[0]['values']]
-    locs = [s for s in params[1]['values']]
+    secs = [s for s in params[1]['values']]
+    locs = [s for s in params[0]['values']]
 
     for key, d in data.items(): #changed iteritems to items (python version change)
         #cellLabel = d['data']['V_soma'].keys()[0]
@@ -31,7 +33,7 @@ def calculateEPSPs(params, data, somaLabel='soma', stimRange=[3000,4000], syn='e
             epsp = min(vsoma[stimRange[0]:stimRange[1]]) - vsoma[stimRange[0]-1] # min voltage between stim time - baseline
         seg = (d['paramValues'][0], d['paramValues'][1])
         weight = d['paramValues'][1]
-        print(seg, weight, epsp, len(vsoma))
+        #print(seg, weight, epsp, len(vsoma))
         out[tuple(seg)].append([weight, epsp])
 
     return out
@@ -41,9 +43,9 @@ def calculateEPSPsPops(params, data, somaLabel='soma', stimRange=[3000,4000], sy
     out = {}
 
     pops = [p for p in params[2]['values']]
-    secs = [s for s in params[0]['values']]
-    locs = [s for s in params[1]['values']]
-
+    secs = [s for s in params[1]['values']]
+    locs = [s for s in params[0]['values']]
+    print(pops,secs,locs)
     for pop in pops: 
         out[pop] = {}
         for sec,loc in zip(secs,locs): out[pop][(sec,loc)] = []
@@ -56,9 +58,9 @@ def calculateEPSPsPops(params, data, somaLabel='soma', stimRange=[3000,4000], sy
         elif syn == 'inh':
             epsp = min(vsoma[stimRange[0]:stimRange[1]]) - vsoma[stimRange[0]-1] # min voltage between stim time - baseline
         pop = d['paramValues'][2]
-        seg = (d['paramValues'][0], d['paramValues'][1])
+        seg = (d['paramValues'][1], d['paramValues'][0])
         weight = d['paramValues'][3]
-        print(pop, seg, weight, epsp, len(vsoma))
+        #print(pop, seg, weight, epsp, len(vsoma))
         out[pop][tuple(seg)].append([weight, epsp])
 
     return out
@@ -103,34 +105,34 @@ def calculateWeightNorm(params, data, epspNorm=0.5, somaLabel='soma', stimRange=
 def calculateWeightNormPops(params, data, epspNorm=0.5, somaLabel='soma', stimRange=[3000,4000], savePath=None):
     epsp = calculateEPSPsPops(params, data, somaLabel=somaLabel, stimRange=stimRange)
 
-    popSaveLabels = {'IT2': 'IT2_reduced', 'IT4': 'IT4_reduced', 'IT5A': 'IT5A_full', 'IT5B': 'IT5B_reduced', 
-                    'PT5B': 'PT_full', 'IT6': 'IT6_reduced', 'CT6': 'CT6_reduced', 'PV2': 'PV_simple', 'SOM2': 'SOM_simple'}
+    popSaveLabels = {'PT5B': 'PT_full'}
     pops = [p for p in params[2]['values']]
-    secs = [s for s in params[0]['values']]
-    locs = [s for s in params[1]['values']]
+    secs = [s for s in params[1]['values']]
+    locs = [s for s in params[0]['values']]
     segs=[]
     for sec,loc in zip(secs,locs): segs.append((sec,loc))
     segs.sort()
     weightNorm = {}
 
     for pop in pops:
-        print(pop)
+        #print(pop)
         weightNorm[pop] = {}
         for seg in segs: weightNorm[pop][seg[0]] = []  # empty list for each section
         for seg in segs:
-            epspSeg = epsp[pop][tuple(seg)]
+            #print(epsp[pop][seg], seg); quit()
+            epspSeg = epsp[pop][seg]
             epspSeg.sort()
             x,y = zip(*epspSeg)
-            print(x,y)
+            #print(x,y)
             f = interp1d(y,x,fill_value="extrapolate")
             w = f(epspNorm)
-            print(w)
+            #print(w, seg[0])
             if w < 0:
                 x, y = zip(*epspSeg[:-1])
                 f = interp1d(y, x, fill_value="extrapolate")
                 w = f(epspNorm)
             wnorm = w / epspNorm
-            print(wnorm)
+            #print(wnorm)
             weightNorm[pop][seg[0]].append(wnorm)
             print('\n%s %s wscale = %.6f' % (pop, str(seg), wnorm))
 
@@ -158,7 +160,7 @@ def calculateWeightNormPops(params, data, epspNorm=0.5, somaLabel='soma', stimRa
             plt.close()
             '''
 
-
+        #print(weightNorm[pop])
         if savePath:
             import pickle
             with open(savePath+popSaveLabels[pop]+'_weightNorm.pkl','wb') as fileObj:
@@ -227,6 +229,7 @@ if __name__ == '__main__':
     '''
 
     # analyze batch E cells    
-    params, data = utils.readBatchData(dataFolder, batchLabel, loadAll=False, saveAll=True, vars=[('simData', 'V_soma')], maxCombs=None)
-    ts = int(1/0.025)
-    calculateWeightNormPops(params, data,  somaLabel='soma', stimRange=[ts*700,ts*800], savePath=dataFolder+'/'+batchLabel+'/')
+    params, data = utils.readBatchData(dataFolder, batchLabel, loadAll=True, saveAll=False, vars=[('simData', 'V_soma')], maxCombs=None)
+    ts = int(1/0.01)
+    weightNorm = calculateWeightNormPops(params, data,  somaLabel='soma', stimRange=[ts*700,ts*800], savePath=dataFolder+'/'+batchLabel+'/')
+    print(weightNorm)
