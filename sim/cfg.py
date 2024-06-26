@@ -22,7 +22,7 @@ cfg = specs.SimConfig()
 # Run parameters
 #------------------------------------------------------------------------------
 cfg.duration = 1.5*1e3 
-cfg.dt = 0.025
+cfg.dt = 0.01
 cfg.seeds = {'conn': 4321, 'stim': 1234, 'loc': 4321} 
 cfg.hParams = {'celsius': 34, 'v_init': -80}  
 cfg.verbose = 0
@@ -150,7 +150,7 @@ cfg.weightNorm = 1  # use weight normalization
 cfg.weightNormThreshold = 4.0  # weight normalization factor threshold
 
 cfg.addConn = 1
-cfg.scale = 0.3
+cfg.scale = 1
 cfg.sizeY = 1350.0
 cfg.sizeX = 300.0
 cfg.sizeZ = 300.0
