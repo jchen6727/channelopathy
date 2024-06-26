@@ -182,7 +182,7 @@ if 'PT5B_full' not in loadCellParams:
 
         cellRule = netParams.cellParams['PT5B_full']
 
-        cellRule['secs']['axon_0']['geom']['pt3d'] = [[0,0,0,0]] #[[1e30, 1e30, 1e30, 1e30]] #stupid workaround that should be fixed in NetPyNE
+        cellRule['secs']['axon_0']['geom']['pt3d'] = [[1e30, 1e30, 1e30, 1e30]] #stupid workaround that should be fixed in NetPyNE
         cellRule['secs']['axon_1']['geom']['pt3d'] = [[1e30, 1e30, 1e30, 1e30]] #breaks in simulations btw. Just used for the perisom and below_soma sections
 
         nonSpiny = ['apic_0' ,'apic_1']
