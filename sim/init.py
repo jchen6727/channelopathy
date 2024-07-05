@@ -12,7 +12,6 @@ MPI usage:
 Contributors: salvadordura@gmail.com
 """
 
-import matplotlib; matplotlib.use('Agg')  # to avoid graphics error in servers
 from netpyne import sim
 
 #------------------------------------------------------------------------------
@@ -86,5 +85,6 @@ sim.gatherData()
 #sim.gatherDataFromFiles()
 
 sim.saveData()                    			# save params, cell info and sim output to file (pickle,mat,txt,etc)#
-sim.analysis.plotData()         			# plot spike raster etc
+
+
 
