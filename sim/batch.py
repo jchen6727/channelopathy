@@ -2,8 +2,8 @@ from netpyne.batchtools.search import search
 
 # run search on UCDAVIS cell.
 params = {
-    'IPTGain': [0.8, 0.9, 1, 1.1, 1.2], # expanded search space by half the mean from both bounds
-    'PTNaFactor': [0.5, 1.], # expanded search space by half the mean from both bounds
+    'IPTGain': [0.8, 0.9, 1, 1.1, 1.2],
+    'PTNaFactor': [0.5, 1.], 
 }
 
 sge_config = {

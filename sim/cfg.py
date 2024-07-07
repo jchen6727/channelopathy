@@ -152,7 +152,7 @@ cfg.makeKgbarFactorEqualToNewFactor = False
 cfg.modifyMechs = {'startTime': 1e20*500, 'endTime': 1e20*1000, 'cellType':'PT', 'mech': 'hd', 'property': 'gbar', 'newFactor': 1.00, 'origFactor': 0.75}
 
 """
-#This form of code does not work. 
+#Clarify this form of code. 
 #cfg.UCDAVIS is taken as the last value assigned to it
 if cfg.UCDAVIS==False:
 	cfg.modifyMechs = {'startTime': 500, 'endTime': 1000, 'cellType':'PT', 'mech': 'hd', 'property': 'gbar', 'newFactor': 1.00, 'origFactor': 0.75}
