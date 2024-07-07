@@ -21,8 +21,8 @@ cfg = specs.SimConfig()
 #------------------------------------------------------------------------------
 # Run parameters
 #------------------------------------------------------------------------------
-cfg.duration = 1.5*1e3 
-cfg.dt = 0.025
+cfg.duration = 1500
+cfg.dt = 0.01
 cfg.seeds = {'conn': 4321, 'stim': 1234, 'loc': 4321} 
 cfg.hParams = {'celsius': 34, 'v_init': -80}  
 cfg.verbose = 0
@@ -36,7 +36,7 @@ cfg.printRunTime = 0.1
 cfg.oneSynPerNetcon = True  # only affects conns not in subconnParams; produces identical results
 
 cfg.includeParamsLabel = False #True # needed for modify synMech False
-cfg.printPopAvgRates = [1000., 5000.]
+cfg.printPopAvgRates = [0, 1500]
 
 cfg.checkErrors = False
 
@@ -87,9 +87,9 @@ cfg.compactConnFormat = 0
 #------------------------------------------------------------------------------
 with open('cells/popColors.pkl', 'rb') as fileObj: popColors = pickle.load(fileObj)['popColors']
 
-cfg.analysis['plotRaster'] = {'include': allpops, 'orderBy': ['pop', 'y'], 'timeRange': [0,cfg.duration], 'saveFig': True, 'showFig': False, 'popRates': True, 'orderInverse': True, 'popColors': popColors, 'figSize': (12,10), 'lw': 0.3, 'markerSize':3, 'marker': '.', 'dpi': 300} 
+cfg.analysis['plotRaster'] = {'include': allpops, 'orderBy': ['pop', 'y'], 'timeRange': [0, 1500], 'saveFig': True, 'showFig': False, 'popRates': True, 'orderInverse': True, 'popColors': popColors, 'figSize': (12,10), 'lw': 0.3, 'markerSize':3, 'marker': '.', 'dpi': 300}
 
-cfg.analysis['plotTraces'] = {'include': cfg.recordCells, 'timeRange': [0,cfg.duration], 'overlay': True, 'oneFigPer': 'trace', 'figSize': (10,4), 'saveFig': True, 'showFig': False} 
+cfg.analysis['plotTraces'] = {'include': cfg.recordCells, 'timeRange': [0, 1500], 'overlay': True, 'oneFigPer': 'trace', 'figSize': (10,4), 'saveFig': True, 'showFig': False}
 
 #------------------------------------------------------------------------------
 # Cells
@@ -103,17 +103,17 @@ cfg.cellmod =  {'IT2': 'HH_reduced',
 				'CT6': 'HH_reduced'}
 
 cfg.ihModel = 'migliore'  # ih model
-cfg.ihGbar = 1.0  # multiplicative factor for ih gbar in PT cells
+cfg.ihGbar = 0.75 # multiplicative factor for ih gbar in PT cells
 cfg.ihGbarZD = None # multiplicative factor for ih gbar in PT cells
 cfg.ihGbarBasal = 1.0 # 0.1 # multiplicative factor for ih gbar in PT cells
 cfg.ihlkc = 0.2 # ih leak param (used in Migliore)
 cfg.ihlkcBasal = 1.0
 cfg.ihlkcBelowSoma = 0.01
 cfg.ihlke = -86  # ih leak param (used in Migliore)
-cfg.ihSlope = 14*2
+cfg.ihSlope = 28
 
 cfg.removeNa = False  # simulate TTX; set gnabar=0s
-cfg.somaNa = 5
+cfg.somaNa = 5.0
 cfg.dendNa = 0.3
 cfg.axonNa = 7
 cfg.axonRa = 0.005
@@ -150,7 +150,7 @@ cfg.weightNorm = 1  # use weight normalization
 cfg.weightNormThreshold = 4.0  # weight normalization factor threshold
 
 cfg.addConn = 1
-cfg.scale = 0.3
+cfg.scale = 1
 cfg.sizeY = 1350.0
 cfg.sizeX = 300.0
 cfg.sizeZ = 300.0
@@ -204,7 +204,7 @@ cfg.addLongConn = 1
 cfg.numCellsLong = 1000 # num of cells per population
 cfg.noiseLong = 1.0  # firing rate random noise
 cfg.delayLong = 5.0  # (ms)
-factor = 1
+factor = 1 # don't do this, it will not work if weightLong is modified in batch.
 cfg.weightLong = {'TPO': 0.5*factor, 'TVL': 0.5*factor, 'S1': 0.5*factor, 'S2': 0.5*factor, 'cM1': 0.5*factor, 'M2': 0.5*factor, 'OC': 0.5*factor}  # corresponds to unitary connection somatic EPSP (mV)
 cfg.startLong = 0  # start at 0 ms
 cfg.ratesLong = {'TPO': [0,5], 'TVL': [0,2.5], 'S1': [0,5], 'S2': [0,5], 'cM1': [0,2.5], 'M2': [0,2.5], 'OC': [0,5]}
@@ -212,7 +212,7 @@ cfg.ratesLong = {'TPO': [0,5], 'TVL': [0,2.5], 'S1': [0,5], 'S2': [0,5], 'cM1': 
 
 ## input pulses
 cfg.addPulses = 1
-cfg.pulse = {'pop': 'None', 'start': 1000, 'end': 1200, 'rate': [0, 20], 'noise': 0.8}
+cfg.pulse = {'pop': 'None', 'start': 1000, 'end': 1100, 'rate': [0, 20], 'noise': 0.8}
 cfg.pulse2 = {'pop': 'None', 'start': 1000, 'end': 1200, 'rate': [0, 20], 'noise': 0.5, 'duration': 500}
 
 
