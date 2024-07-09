@@ -5,20 +5,19 @@ Simulation configuration for M1 model (using NetPyNE)
 
 Contributors: salvadordura@gmail.com
 """
-
-from netpyne import specs
+from netpyne.batchtools import specs
 import pickle
 
-cfg = specs.SimConfig()  
+cfg = specs.SimConfig()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 #
 # SIMULATION CONFIGURATION
 #
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Run parameters
 #------------------------------------------------------------------------------
 cfg.duration = 1500
@@ -40,60 +39,80 @@ cfg.printPopAvgRates = [0, 1500]
 
 cfg.checkErrors = False
 
-cfg.saveInterval = 100 # define how often the data is saved, this can be used with interval run if you want to update the weights more often than you save
+cfg.saveInterval = 100  # define how often the data is saved, this can be used with interval run if you want to update the weights more often than you save
 cfg.intervalFolder = 'interval_saving'
 
-cfg.UCDAVIS = False
-
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Recording 
-#------------------------------------------------------------------------------
-allpops = ['IT2','PV2','SOM2','IT4','IT5A','PV5A','SOM5A','IT5B','PT5B','PV5B','SOM5B','IT6','CT6','PV6','SOM6']
+# ------------------------------------------------------------------------------
+allpops = ['IT2', 'PV2', 'SOM2', 'IT4', 'IT5A', 'PV5A', 'SOM5A', 'IT5B', 'PT5B', 'PV5B', 'SOM5B', 'IT6', 'CT6', 'PV6',
+           'SOM6']
 
 cfg.recordCells = [(pop,0) for pop in allpops] # record one cell of each pop
  
 cfg.recordTraces = {'V_soma': {'sec':'soma', 'loc':0.5, 'var':'v'}}
 
-cfg.recordTraces = {'V_soma': {'sec':'soma', 'loc':0.5, 'var':'v'}, 
-                    'V_axon_0': {'sec':'axon_0', 'loc':0.5, 'var':'v', 'conds':{'pop': 'PT5B'}}}
+cfg.recordTraces = {'V_soma': {'sec': 'soma', 'loc': 0.5, 'var': 'v'},
+                    'V_axon_0': {'sec': 'axon_0', 'loc': 0.5, 'var': 'v', 'conds': {'pop': 'PT5B'}}}
 
 cfg.recordStim = False
-cfg.recordTime = False  
+cfg.recordTime = False
 cfg.recordStep = 0.1
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Saving
 #------------------------------------------------------------------------------
 cfg.simLabel = 'm1'
 cfg.saveFolder = '../data'
 cfg.savePickle = True
 cfg.saveJson = False
-cfg.saveDataInclude = ['simData', 'simConfig', 'netParams']#, 'net']
-cfg.backupCfgFile = None #['cfg.py', 'backupcfg/'] 
+cfg.saveDataInclude = ['simData', 'simConfig', 'netParams']  # , 'net']
+cfg.backupCfgFile = None  # ['cfg.py', 'backupcfg/']
 cfg.gatherOnlySimData = False
 cfg.saveCellSecs = False
 cfg.saveCellConns = False
 cfg.compactConnFormat = 0
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Analysis and plotting 
-#------------------------------------------------------------------------------
-with open('cells/popColors.pkl', 'rb') as fileObj: popColors = pickle.load(fileObj)['popColors']
+# ------------------------------------------------------------------------------
+# with open('cells/popColors.pkl', 'rb') as fileObj: popColors = pickle.load(fileObj)['popColors']
 
-cfg.analysis['plotRaster'] = {'include': allpops, 'orderBy': ['pop', 'y'], 'timeRange': [0, 1500], 'saveFig': True, 'showFig': False, 'popRates': True, 'orderInverse': True, 'popColors': popColors, 'figSize': (12,10), 'lw': 0.3, 'markerSize':3, 'marker': '.', 'dpi': 300}
+popColors = {
+    'IT2': [0.984375, 0.44140625, 0.49609375],
+    'IT4': [0.984375, 0.24609375, 0.30078125],
+    'IT5A': [0.984375, 0.05078125, 0.10546875],
+    'IT5B': [0.7890625, 0.05078125, 0.10546875],
+    'IT6': [0.59375, 0.05078125, 0.10546875],
+    'PT5B': [0.04296875, 0.140625, 0.98046875],
+    'PT5B_1': [0.04296875, 0.140625, 0.98046875],
+    'PT5B_ZD': [0.04296875, 0.140625, 0.98046875],
+    'CT6': [0.08984375, 0.6328125, 0.2578125],
+    'PV2': [0.96484375, 0.859375, 0.43359375],
+    'PV5A': [0.953125, 0.8125, 0.24609375],
+    'PV5B': [0.94140625, 0.765625, 0.05859375],
+    'PV6': [0.828125, 0.671875, 0.05078125],
+    'SOM2': [0.96875, 0.765625, 0.44140625],
+    'SOM5A': [0.95703125, 0.6875, 0.25390625],
+    'SOM5B': [0.94921875, 0.609375, 0.0703125],
+    'SOM6': [0.8359375, 0.53515625, 0.0625]}
 
-cfg.analysis['plotTraces'] = {'include': cfg.recordCells, 'timeRange': [0, 1500], 'overlay': True, 'oneFigPer': 'trace', 'figSize': (10,4), 'saveFig': True, 'showFig': False}
+cfg.analysis['plotRaster'] = {'include': allpops, 'orderBy': ['pop', 'y'], 'timeRange': [0, 1500], 'saveFig': True,
+                              'showFig': False, 'popRates': True, 'orderInverse': True, 'popColors': popColors,
+                              'figSize': (12, 10), 'lw': 0.3, 'markerSize': 3, 'marker': '.', 'dpi': 300}
+cfg.analysis['plotTraces'] = {'include': cfg.recordCells, 'timeRange': [0, 1500], 'overlay': True, 'oneFigPer': 'trace',
+                              'figSize': (10, 4), 'saveFig': True, 'showFig': False}
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Cells
-#------------------------------------------------------------------------------
-cfg.cellmod =  {'IT2': 'HH_reduced',
-				'IT4': 'HH_reduced',
-				'IT5A': 'HH_full',
-				'IT5B': 'HH_reduced',
-				'PT5B': 'HH_full',
-				'IT6': 'HH_reduced',
-				'CT6': 'HH_reduced'}
+# ------------------------------------------------------------------------------
+cfg.cellmod = {'IT2': 'HH_reduced',
+               'IT4': 'HH_reduced',
+               'IT5A': 'HH_full',
+               'IT5B': 'HH_reduced',
+               'PT5B': 'HH_full',
+               'IT6': 'HH_reduced',
+               'CT6': 'HH_reduced'}
 
 cfg.ihModel = 'migliore'  # ih model
 cfg.ihGbar = 0.75 # multiplicative factor for ih gbar in PT cells
@@ -114,27 +133,26 @@ cfg.axonRa = 0.005
 cfg.gpas = 0.5  # multiplicative factor for pas g in PT cells
 cfg.epas = 0.9  # multiplicative factor for pas e in PT cells
 
-cfg.KgbarFactor = 1.0 # multiplicative factor for K channels gbar in all E cells
+cfg.KgbarFactor = 1.0  # multiplicative factor for K channels gbar in all E cells
 cfg.makeKgbarFactorEqualToNewFactor = False
 
 cfg.modifyMechs = {'startTime': 1e20*500, 'endTime': 1e20*1000, 'cellType':'PT', 'mech': 'hd', 'property': 'gbar', 'newFactor': 1.00, 'origFactor': 0.75}
 
-
 cfg.PTNaFactor = 1.
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Synapses
-#------------------------------------------------------------------------------
-cfg.synWeightFractionEE = [0.5, 0.5] # E->E AMPA to NMDA ratio
-cfg.synWeightFractionEI = [0.5, 0.5] # E->I AMPA to NMDA ratio
-cfg.synWeightFractionSOME = [0.9, 0.1] # SOM -> E GABAASlow to GABAB ratio
+# ------------------------------------------------------------------------------
+cfg.synWeightFractionEE = [0.5, 0.5]  # E->E AMPA to NMDA ratio
+cfg.synWeightFractionEI = [0.5, 0.5]  # E->I AMPA to NMDA ratio
+cfg.synWeightFractionSOME = [0.9, 0.1]  # SOM -> E GABAASlow to GABAB ratio
 
 cfg.synsperconn = {'HH_full': 5, 'HH_reduced': 1, 'HH_simple': 1}
 cfg.AMPATau2Factor = 1.0
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Network 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 cfg.singleCellPops = False  # Create pops with 1 single cell (to debug)
 cfg.weightNorm = 1  # use weight normalization
 cfg.weightNormThreshold = 4.0  # weight normalization factor threshold
@@ -157,24 +175,24 @@ cfg.IIGain = 1.0
 
 cfg.IEdisynapticBias = None  # increase prob of I->Ey conns if Ex->I and Ex->Ey exist 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 ## E->I gains
 cfg.EPVGain = 1.0
 cfg.ESOMGain = 1.0
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 ## I->E gains
 cfg.PVEGain = 1.0
 cfg.SOMEGain = 1.0
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 ## I->I gains
-cfg.PVSOMGain = None #0.25
-cfg.SOMPVGain = None #0.25
-cfg.PVPVGain = None # 0.75
-cfg.SOMSOMGain = None #0.75
+cfg.PVSOMGain = None  # 0.25
+cfg.SOMPVGain = None  # 0.25
+cfg.PVPVGain = None  # 0.75
+cfg.SOMSOMGain = None  # 0.75
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 ## I->E/I layer weights (L2/3+4, L5, L6)
 cfg.IEweights = [0.8, 0.8, 1.0]
 cfg.IIweights = [1.2, 1.0, 1.0]
@@ -182,43 +200,42 @@ cfg.IIweights = [1.2, 1.0, 1.0]
 cfg.IPTGain = 1.0
 cfg.IFullGain = 1.0
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Subcellular distribution
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 cfg.addSubConn = True
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Long range inputs
-#------------------------------------------------------------------------------
-cfg.addLongConn = 1 
-cfg.numCellsLong = 1000 # num of cells per population
+# ------------------------------------------------------------------------------
+cfg.addLongConn = 1
+cfg.numCellsLong = 1000  # num of cells per population
 cfg.noiseLong = 1.0  # firing rate random noise
 cfg.delayLong = 5.0  # (ms)
 #factor = 1 # don't do this, it will not work if weightLong is modified in batch.
 cfg.weightLong = {'TPO': 0.5, 'TVL': 0.5, 'S1': 0.5, 'S2': 0.5, 'cM1': 0.5, 'M2': 0.5, 'OC': 0.5}  # corresponds to unitary connection somatic EPSP (mV)
 cfg.startLong = 0  # start at 0 ms
-cfg.ratesLong = {'TPO': [0,5], 'TVL': [0,2.5], 'S1': [0,5], 'S2': [0,5], 'cM1': [0,2.5], 'M2': [0,2.5], 'OC': [0,5]}
-
+cfg.ratesLong = {'TPO': [0, 5], 'TVL': [0, 2.5], 'S1': [0, 5], 'S2': [0, 5], 'cM1': [0, 2.5], 'M2': [0, 2.5],
+                 'OC': [0, 5]}
 
 ## input pulses
 cfg.addPulses = 1
 cfg.pulse = {'pop': 'None', 'start': 1000, 'end': 1100, 'rate': [0, 20], 'noise': 0.8}
 cfg.pulse2 = {'pop': 'None', 'start': 1000, 'end': 1200, 'rate': [0, 20], 'noise': 0.5, 'duration': 500}
 
-
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Current inputs 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 cfg.addIClamp = 0
 
 cfg.IClamp1 = {'pop': 'IT5B', 'sec': 'soma', 'loc': 0.5, 'start': 0, 'dur': 1000, 'amp': 0.50}
 
-
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # NetStim inputs 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 cfg.addNetStim = 0
 
- 			   ## pop, sec, loc, synMech, start, interval, noise, number, weight, delay 
-cfg.NetStim1 = {'pop': 'IT2', 'ynorm':[0,1], 'sec': 'soma', 'loc': 0.5, 'synMech': ['AMPA'], 'synMechWeightFactor': [1.0],
-				'start': 500, 'interval': 1000.0/60.0, 'noise': 0.0, 'number': 60.0, 'weight': 30.0, 'delay': 0}
+## pop, sec, loc, synMech, start, interval, noise, number, weight, delay
+cfg.NetStim1 = {'pop': 'IT2', 'ynorm': [0, 1], 'sec': 'soma', 'loc': 0.5, 'synMech': ['AMPA'],
+                'synMechWeightFactor': [1.0],
+                'start': 500, 'interval': 1000.0 / 60.0, 'noise': 0.0, 'number': 60.0, 'weight': 30.0, 'delay': 0}

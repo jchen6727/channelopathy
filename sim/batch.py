@@ -1,7 +1,10 @@
-"""
-batch.py 
+from netpyne.batchtools.search import search
 
-Batch simulation for M1 model using NetPyNE
+# run search on UCDAVIS cell.
+params = {
+    'IPTGain': [0.8, 0.9, 1, 1.1, 1.2],
+    'PTNaFactor': [0.5, 1.], 
+}
 
 Contributors: salvadordura@gmail.com
 """

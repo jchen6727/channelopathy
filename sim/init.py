@@ -66,3 +66,5 @@ if comm.is_host():
     out_json = json.dumps({'fitness': fitness})
     comm.send(out_json)
     comm.close()
+
+

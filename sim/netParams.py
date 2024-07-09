@@ -1,4 +1,3 @@
-
 """
 netParams.py 
 
@@ -7,17 +6,17 @@ High-level specifications for M1 network model using NetPyNE
 Contributors: salvadordura@gmail.com
 """
 
-from netpyne import specs
+from netpyne.batchtools import specs
+from cfg import cfg
+
+cfg.update_cfg()
 import pickle, json
+# N.B if we are handling multiple illegible small pickle files,
+# makes more sense to aggregate to a single data structure & storage
 
 netParams = specs.NetParams()   # object of class NetParams to store the network parameters
 
-netParams.version = 56
-
-try:
-    from __main__ import cfg  # import SimConfig object with params from parent module
-except:
-    from cfg import cfg
+netParams.version = 'batchtools'
 
 #------------------------------------------------------------------------------
 #
@@ -50,7 +49,7 @@ netParams.defineCellShapes = True  # convert stylized geoms to 3d points
 # special condition to change Kgbar together with ih when running batch
 # note min Kgbar is assumed to be 0.5, so this is set here as an offset 
 if cfg.makeKgbarFactorEqualToNewFactor:
-    cfg.KgbarFactor = 0.5 + cfg.modifyMechs['newFactor']
+    cfg.KgbarFactor = 0.5 + cfg.modifyMechs['newFactor'] #check for possible bug.
 
 #------------------------------------------------------------------------------
 # Cell parameters
@@ -275,8 +274,32 @@ if 'SOM_simple' not in loadCellParams:
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-## load densities
+##load densities
+"""
+N.B.
 with open('cells/cellDensity.pkl', 'rb') as fileObj: density = pickle.load(fileObj)['density']
+In [14]: with open('cellDensity.pkl', 'rb') as fileObj: density = pickle.load(fileObj)['density']
+
+In [15]: density
+Out[15]: 
+{'Tsai09': [112485.0, 110496.0, 85515.0, 115371.0, 143965.0],
+ ('M1', 'E'): [95443.5225, 100551.36, 67556.85, 91143.09000000001, 129568.5],
+ ('M1', 'I'): [17041.4775,
+  9944.64,
+  17958.149999999998,
+  24227.91,
+  14396.5,
+  14938.710833333334],
+ ('M1', 'PV'): [11418.0, 6663.0, 12032.0, 16233.0, 9646.0, 10009.0],
+ ('M1', 'SOM'): [5624.0, 3282.0, 5926.0, 7995.0, 4751.0, 4930.0]}
+"""
+
+density = \
+    {'Tsai09': [112485.0, 110496.0, 85515.0, 115371.0, 143965.0],
+     ('M1', 'E'): [95443.5225, 100551.36, 67556.85, 91143.09000000001, 129568.5],
+     ('M1', 'I'): [17041.4775, 9944.64, 17958.149999999998, 24227.91, 14396.5, 14938.710833333334],
+     ('M1', 'PV'): [11418.0, 6663.0, 12032.0, 16233.0, 9646.0, 10009.0],
+     ('M1', 'SOM'): [5624.0, 3282.0, 5926.0, 7995.0, 4751.0, 4930.0]}
 
 ## Local populations
 
@@ -581,8 +604,8 @@ if cfg.addConn and (cfg.IEGain > 0.0 or cfg.IIGain > 0.0):
 if cfg.addLongConn:
 
     # load load experimentally based parameters for long range inputs
-    cmatLong = connLongData['cmat']
-    binsLong = connLongData['bins']
+    cmatLong = connLongData['cmat'] # multiple tuple keys
+    binsLong = connLongData['bins'] # multiple tuple keys
 
     longPops = ['TPO', 'TVL', 'S1', 'S2', 'cM1', 'M2', 'OC']
     cellTypes = ['IT', 'PT', 'CT', 'PV', 'SOM']
