@@ -50,14 +50,7 @@ cfg.UCDAVIS = False
 #------------------------------------------------------------------------------
 allpops = ['IT2','PV2','SOM2','IT4','IT5A','PV5A','SOM5A','IT5B','PT5B','PV5B','SOM5B','IT6','CT6','PV6','SOM6']
 
-cfg.cellsrec = 1
-if cfg.cellsrec == 0:  cfg.recordCells = ['all'] # record all cells
-elif cfg.cellsrec == 1: cfg.recordCells = [(pop,0) for pop in allpops] # record one cell of each pop
-elif cfg.cellsrec == 2: cfg.recordCells = [('IT2',10), ('IT5A',10), ('PT5B',10), ('PV5B',10), ('SOM5B',10)] # record selected cells
-elif cfg.cellsrec == 3: cfg.recordCells = [(pop,50) for pop in ['IT5A', 'PT5B']]+[('PT5B',x) for x in [393,579,19,104]] #,214,1138,799]] # record selected cells # record selected cells
-elif cfg.cellsrec == 4: cfg.recordCells = [(pop,50) for pop in ['IT2', 'IT4', 'IT5A', 'PT5B']] \
-										+ [('IT5A',x) for x in [393,447,579,19,104]] \
-										+ [('PT5B',x) for x in [393,447,579,19,104,214,1138,979,799]] # record selected cells
+cfg.recordCells = [(pop,0) for pop in allpops] # record one cell of each pop
  
 cfg.recordTraces = {'V_soma': {'sec':'soma', 'loc':0.5, 'var':'v'}}
 
@@ -71,8 +64,8 @@ cfg.recordStep = 0.1
 #------------------------------------------------------------------------------
 # Saving
 #------------------------------------------------------------------------------
-cfg.simLabel = 'v56_tune3'
-cfg.saveFolder = '../data/v56_manualTune'
+cfg.simLabel = 'm1'
+cfg.saveFolder = '../data'
 cfg.savePickle = True
 cfg.saveJson = False
 cfg.saveDataInclude = ['simData', 'simConfig', 'netParams']#, 'net']
@@ -124,10 +117,7 @@ cfg.epas = 0.9  # multiplicative factor for pas e in PT cells
 cfg.KgbarFactor = 1.0 # multiplicative factor for K channels gbar in all E cells
 cfg.makeKgbarFactorEqualToNewFactor = False
 
-if cfg.UCDAVIS==False:
-	cfg.modifyMechs = {'startTime': 500, 'endTime': 1000, 'cellType':'PT', 'mech': 'hd', 'property': 'gbar', 'newFactor': 1.00, 'origFactor': 0.75}
-else:
-	cfg.modifyMechs = {'startTime': 1e20*500, 'endTime': 1e20*1000, 'cellType':'PT', 'mech': 'hd', 'property': 'gbar', 'newFactor': 1.00, 'origFactor': 0.75}
+cfg.modifyMechs = {'startTime': 1e20*500, 'endTime': 1e20*1000, 'cellType':'PT', 'mech': 'hd', 'property': 'gbar', 'newFactor': 1.00, 'origFactor': 0.75}
 
 
 cfg.PTNaFactor = 1.
@@ -204,8 +194,8 @@ cfg.addLongConn = 1
 cfg.numCellsLong = 1000 # num of cells per population
 cfg.noiseLong = 1.0  # firing rate random noise
 cfg.delayLong = 5.0  # (ms)
-factor = 1 # don't do this, it will not work if weightLong is modified in batch.
-cfg.weightLong = {'TPO': 0.5*factor, 'TVL': 0.5*factor, 'S1': 0.5*factor, 'S2': 0.5*factor, 'cM1': 0.5*factor, 'M2': 0.5*factor, 'OC': 0.5*factor}  # corresponds to unitary connection somatic EPSP (mV)
+#factor = 1 # don't do this, it will not work if weightLong is modified in batch.
+cfg.weightLong = {'TPO': 0.5, 'TVL': 0.5, 'S1': 0.5, 'S2': 0.5, 'cM1': 0.5, 'M2': 0.5, 'OC': 0.5}  # corresponds to unitary connection somatic EPSP (mV)
 cfg.startLong = 0  # start at 0 ms
 cfg.ratesLong = {'TPO': [0,5], 'TVL': [0,2.5], 'S1': [0,5], 'S2': [0,5], 'cM1': [0,2.5], 'M2': [0,2.5], 'OC': [0,5]}
 
