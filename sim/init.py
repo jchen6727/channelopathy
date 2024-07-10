@@ -11,51 +11,22 @@ MPI usage:
 
 Contributors: salvadordura@gmail.com
 """
-
+from netpyne.batchtools import specs
+from netpyne.batchtools import comm
 from netpyne import sim
+from netParams import netParams, cfg
+import json
+import numpy
 
-#------------------------------------------------------------------------------
-## Function to modify cell params during sim (e.g. modify PT ih)
-def modifyMechsFunc(simTime):
-    from netpyne import sim
-
-    t = simTime
-
-    cellType = cfg.modifyMechs['cellType']
-    mech = cfg.modifyMechs['mech']
-    prop = cfg.modifyMechs['property']
-    newFactor = cfg.modifyMechs['newFactor']
-    origFactor = cfg.modifyMechs['origFactor']
-    factor = newFactor / origFactor
-    change = False
-
-    if cfg.modifyMechs['endTime']-1.0 <= t <= cfg.modifyMechs['endTime']+1.0:
-        factor = origFactor / newFactor if abs(newFactor) > 0.0 else origFactor
-        change = True
-
-    elif t >= cfg.modifyMechs['startTime']-1.0 <= t <= cfg.modifyMechs['startTime']+1.0:
-        factor = newFactor / origFactor if abs(origFactor) > 0.0 else newFactor
-        change = True
-
-    if change:
-        print('   Modifying %s %s %s by a factor of %f' % (cellType, mech, prop, factor))
-        for cell in sim.net.cells:
-            if 'cellType' in cell.tags and cell.tags['cellType'] == cellType:
-                for secName, sec in cell.secs.items():
-                    if mech in sec['mechs'] and prop in sec['mechs'][mech]:
-                        # modify python
-                        sec['mechs'][mech][prop] = [g * factor for g in sec['mechs'][mech][prop]] if isinstance(sec['mechs'][mech][prop], list) else sec['mechs'][mech][prop] * factor
-
-                        # modify neuron
-                        for iseg, seg in enumerate(sec['hObj']):  # set mech params for each segment
-                            if sim.cfg.verbose: print('   Modifying %s %s %s by a factor of %f' % (secName, mech, prop, factor))
-                            setattr(getattr(seg, mech), prop, getattr(getattr(seg, mech), prop) * factor)
-
+def calculate_fitness(freq, target_freq, width, min_freq, max_freq, max_fitness):
+    if freq < min_freq or freq > max_freq:
+        return max_fitness
+    else:
+        return min(numpy.exp(abs(freq - target_freq)/width), max_fitness)
 
 
 # -----------------------------------------------------------
 # Main code
-cfg, netParams = sim.readCmdLineArgs()
 sim.initialize(
     simConfig = cfg, 	
     netParams = netParams)  # create network object and set cfg and net params
@@ -70,15 +41,9 @@ sim.setupRecording()              			# setup variables to record for each cell (
 # Simulation option 1: standard
 sim.runSim()                              # run parallel Neuron simulation (calling func to modify mechs)
 
-#print(cfg.modifyMechs)
-# Simulation option 2: interval function to modify mechanism params
-#if cfg.UCDAVIS==False:
-#    sim.runSimWithIntervalFunc(1000.0, modifyMechsFunc)       # run parallel Neuron simulation (calling func to modify mechs)
-#else:
-#    sim.runSimWithIntervalFunc(1e20*1000.0, modifyMechsFunc)
 
 # Gather/save data option 1: standard
-sim.gatherData()
+sim.gatherData() # should have data in sim.allSimData()
 
 # Gather/save data option 2: distributed saving across nodes 
 #sim.saveDataInNodes()
@@ -86,5 +51,20 @@ sim.gatherData()
 
 sim.saveData()                    			# save params, cell info and sim output to file (pickle,mat,txt,etc)#
 
+if comm.is_host():
+    netParams.save("{}/{}_params.json".format(cfg.saveFolder, cfg.simLabel))
+    print('transmitting data...')
+    inputs = specs.get_mappings()
+    #print(json.dumps({**inputs}))
+    results = sim.analysis.popAvgRates(show=False)
+    pop_fitness = []
+    for epop in ['IT2', 'IT4', 'IT5A', 'IT5B', 'PT5B', 'IT6', 'CT6']:
+        pop_fitness.append(calculate_fitness(results[epop], 5, 5, 0.5, 100, 1000))
+    for ipop in ['PV2', 'SOM2', 'PV5A', 'SOM5A', 'PV5B', 'SOM5B', 'PV6', 'SOM6']:
+        pop_fitness.append(calculate_fitness(results[ipop], 10, 15, 0.25, 100, 1000))
+    fitness = numpy.mean(pop_fitness)
+    out_json = json.dumps({'fitness': fitness})
+    comm.send(out_json)
+    comm.close()
 
 

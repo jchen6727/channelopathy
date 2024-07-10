@@ -8,9 +8,10 @@ Contributors: salvadordura@gmail.com
 
 from netpyne.batchtools import specs
 from cfg import cfg
+import pickle, json
 
 cfg.update_cfg()
-import pickle, json
+
 # N.B if we are handling multiple illegible small pickle files,
 # makes more sense to aggregate to a single data structure & storage
 
